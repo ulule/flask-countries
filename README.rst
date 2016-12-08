@@ -5,6 +5,8 @@ Flask Countries
 A Flask extension that provides country choices for use with forms, flag
 icons static files.
 
+This project is a fork of the great `django-countries`_.
+
 Installation
 ============
 
@@ -168,3 +170,5 @@ which will result in the field having the following output structure::
 
 Either the code or this dict output structure are acceptable as input
 irregardless of the ``country_dict`` argument's value.
+
+.. _django-countries: https://github.com/SmileyChris/django-countries
