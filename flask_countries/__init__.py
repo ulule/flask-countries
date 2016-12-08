@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
+
+import six
+
 from itertools import islice
 
-from django_countries.conf import settings
-from django.utils import six
-from django.utils.encoding import force_text
-from django.utils.translation import override
+from flask_babel import force_locale
+
+from .utils import force_text
 
 try:
     import pyuca
@@ -31,16 +33,29 @@ class Countries(object):
     Iterating this object will return the countries as tuples (of the country
     code and name), sorted by name.
     """
+    def __init__(self, app=None, *args, **kwargs):
+        if app:
+            self.init_app(app, *args, **kwargs)
+
+    def init_app(self, app):
+        self.app = app
+        self.app.context_processor(self.context_processor)
+
+    def context_processor(self):
+        return {
+            'COUNTRIES': self,
+        }
 
     def get_option(self, option):
         """
         Get a configuration option, trying the options attribute first and
-        falling back to a Django project setting.
+        falling back to a Flask app config.
         """
         value = getattr(self, option, None)
         if value is not None:
             return value
-        return getattr(settings, 'COUNTRIES_{0}'.format(option.upper()))
+
+        return self.app.config.get('COUNTRIES_{0}'.format(option.upper()))
 
     @property
     def countries(self):
@@ -64,7 +79,7 @@ class Countries(object):
             else:
                 # Local import so that countries aren't loaded into memory
                 # until first used.
-                from django_countries.data import COUNTRIES, COMMON_NAMES
+                from flask_countries.data import COUNTRIES, COMMON_NAMES
                 self._countries = dict(COUNTRIES)
                 if self.get_option('common_names'):
                     self._countries.update(COMMON_NAMES)
@@ -95,7 +110,7 @@ class Countries(object):
     def alt_codes(self):
         if not hasattr(self, '_alt_codes'):
             # Again, local import so data is not loaded unless it's needed.
-            from django_countries.data import ALT_CODES
+            from flask_countries.data import ALT_CODES
             self._alt_codes = ALT_CODES
         return self._alt_codes
 
@@ -200,7 +215,7 @@ class Countries(object):
 
         If no match is found, returns an empty string.
         """
-        with override(language):
+        with force_locale(language):
             for code, name in self:
                 if name == country:
                     return code
@@ -271,5 +286,3 @@ class Countries(object):
         except TypeError:
             return list(islice(self.__iter__(), index.start, index.stop,
                                index.step))
-
-countries = Countries()

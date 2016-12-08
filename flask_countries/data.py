@@ -20,7 +20,7 @@ import glob
 import os
 
 try:
-    from django.utils.translation import ugettext_lazy as _
+    from flask_babel import lazy_gettext as _
 except ImportError:  # pragma: no cover
     # Allows this module to be executed without Django installed.
     _ = lambda x: x

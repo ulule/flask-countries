@@ -320,7 +320,7 @@ def check_ioc_countries(verbosity=1):
     """
     Check if all IOC codes map to ISO codes correctly
     """
-    from django_countries.data import COUNTRIES
+    from flask_countries.data import COUNTRIES
 
     if verbosity:  # pragma: no cover
         print("Checking if all IOC codes map correctly")

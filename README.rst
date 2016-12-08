@@ -1,72 +1,19 @@
 ================
-Django Countries
+Flask Countries
 ================
 
-A Django application that provides country choices for use with forms, flag
-icons static files, and a country field for models.
+A Flask extension that provides country choices for use with forms, flag
+icons static files.
 
 Installation
 ============
 
-1. ``pip install django-countries``
-2. Add ``django_countries`` to ``INSTALLED_APPS``
+1. ``pip install flask-countries``
 
 For more accurate sorting of translated country names, install the optional
 pyuca_ package.
 
 .. _pyuca: https://pypi.python.org/pypi/pyuca/
-
-
-CountryField
-============
-
-A country field for Django models that provides all ISO 3166-1 countries as
-choices.
-
-``CountryField`` is based on Django's ``CharField``, providing choices
-corresponding to the official ISO 3166-1 list of countries (with a default
-``max_length`` of 2).
-
-Consider the following model using a ``CountryField``::
-
-    from django.db import models
-    from django_countries.fields import CountryField
-
-    class Person(models.Model):
-        name = models.CharField(max_length=100)
-        country = CountryField()
-
-Any ``Person`` instance will have a ``country`` attribute that you can use to
-get details of the person's country::
-
-    >>> person = Person(name='Chris', country='NZ')
-    >>> person.country
-    Country(code='NZ')
-    >>> person.country.name
-    'New Zealand'
-    >>> person.country.flag
-    '/static/flags/nz.gif'
-
-This object (``person.country`` in the example) is a ``Country`` instance,
-which is described below.
-
-Use ``blank_label`` to set the label for the initial blank choice shown in
-forms::
-
-    country = CountryField(blank_label='(select country)')
-
-This field can also allow multiple selections of countries (saved as a comma
-separated string). The field will always output a list of countries in this
-mode. For example::
-
-    class Incident(models.Model):
-        title = models.CharField(max_length=100)
-        countries = CountryField(multiple=True)
-
-    >>> for country in Incident.objects.get(title='Pavlova dispute').countries:
-    ...     print(country.name)
-    Australia
-    New Zealand
 
 
 The ``Country`` object
@@ -98,53 +45,17 @@ numeric
 numeric_padded
   The numeric country code as a three character 0-padded string.
 
-``CountrySelectWidget``
------------------------
-
-A widget is included that can show the flag image after the select box
-(updated with JavaScript when the selection changes).
-
-When you create your form, you can use this custom widget like normal::
-
-    from django_countries.widgets import CountrySelectWidget
-
-    class PersonForm(forms.ModelForm):
-        class Meta:
-            model = models.Person
-            fields = ('name', 'country')
-            widgets = {'country': CountrySelectWidget()}
-
-Pass a ``layout`` text argument to the widget to change the positioning of the
-flag and widget. The default layout is::
-
-    '{widget}<img class="country-select-flag" id="{flag_id}" style="margin: 6px 4px 0" src="{country.flag}">'
-
-
-Custom forms
-============
-
-If you want to use the countries in a custom form, use the following custom
-field to ensure the translatable strings for the country choices are left lazy
-until the widget renders::
-
-    from django_countries.fields import LazyTypedChoiceField
-
-    class CustomForm(forms.Form):
-        country = LazyTypedChoiceField(choices=countries)
-
-You can also use the CountrySelectWidget_ as the widget for this field if you
-want the flag image after the select box.
 
 
 Get the countries from Python
 =============================
 
-Use the ``django_countries.countries`` object instance as an iterator of ISO
+Use the ``flask_countries.countries`` object instance as an iterator of ISO
 3166-1 country codes and names (sorted by name).
 
 For example::
 
-    >>> from django_countries import countries
+    >>> from flask_countries import countries
     >>> dict(countries)['NZ']
     'New Zealand'
 
@@ -155,21 +66,9 @@ For example::
     Åland Islands (AX)
     Albania (AL)
 
-Country names are translated using Django's standard ``ugettext``.
+Country names are translated using Babel's standard ``ugettext``.
 If you would like to help by adding a translation, please visit
 https://www.transifex.com/projects/p/django-countries/
-
-
-Template Tags
-=============
-
-If you have your country code stored in a different place than a `CountryField`
-you can use the template tag to get a `Country` object and have access to all
-of its properties::
-
-    {% load countries %}
-    {% get_country 'BR' as country %}
-    {{ country.name }}
 
 
 Customization
@@ -248,13 +147,6 @@ For example: ``COUNTRIES_FLAG_URL = 'flags/16x10/{code_upper}.png'``
 
 No checking is done to ensure that a static flag actually exists.
 
-Alternatively, you can specify a different URL on a specific ``CountryField``::
-
-    class Person(models.Model):
-        name = models.CharField(max_length=100)
-        country = CountryField(
-            countries_flag_url='//flags.example.com/{code}.png')
-
 
 Single field customization
 --------------------------
@@ -264,43 +156,6 @@ create a ``Countries`` subclass which overrides settings.
 
 To override a setting, give the class an attribute matching the lowercased
 setting without the ``COUNTRIES_`` prefix.
-
-Then just reference this class in a field. For example, this ``CountryField``
-uses a custom country list that only includes the G8 countries::
-
-    from django_countries import Countries
-
-    class G8Countries(Countries):
-        only = [
-            'CA', 'FR', 'DE', 'IT', 'JP', 'RU', 'GB',
-            ('EU', _('European Union'))
-        ]
-
-    class Vote(models.Model):
-        country = CountryField(countries=G8Countries)
-        approve = models.BooleanField()
-
-
-Django Rest Framework field
-===========================
-
-Django Countries ships with a ``CountryField`` serializer field to simplify
-the REST interface. For example::
-
-    from django_countries.serializer_fields import CountryField
-
-    class PersonSerializer(serializers.ModelSerializer):
-        country = CountryField()
-
-        class Meta:
-            model = models.Person
-            fields = ('name', 'email', 'country')
-
-
-You can optionally instantiate the field with ``countries`` with a custom
-Countries_ instance.
-
-.. _Countries: `Single field customization`_
 
 REST output format
 ------------------

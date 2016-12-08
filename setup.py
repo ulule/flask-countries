@@ -18,13 +18,13 @@ def read_files(*filenames):
 
 
 setup(
-    name='django-countries',
-    version='4.0',
-    description='Provides a country field for Django models.',
+    name='flask-countries',
+    version='1.0',
+    description='Provides a country field for a flask application',
     long_description=read_files('README.rst', 'CHANGES.rst'),
-    author='Chris Beaven',
-    author_email='smileychris@gmail.com',
-    url='https://github.com/SmileyChris/django-countries/',
+    author='Florent Messa',
+    author_email='florent.messa@gmail.com',
+    url='https://github.com/ulule/flask-countries/',
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,

@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.test import TestCase
-from django.utils import translation
 
-from django_countries import countries, Countries
-from django_countries.tests import custom_countries
+import unittest
+
+from flask_countries import Countries
+from flask import Flask
+
+app = Flask(__name__)
+
+countries = Countries(app)
+
+
+class FantasyCountries(Countries):
+    only = ['NZ', ('NV', 'Neverland')]
 
 
 EXPECTED_COUNTRY_COUNT = 249
@@ -15,7 +23,7 @@ FIRST_THREE_COUNTRIES = [
 ]
 
 
-class BaseTest(TestCase):
+class BaseTest(unittest.TestCase):
 
     def setUp(self):
         del countries.countries
@@ -77,7 +85,7 @@ class TestCountriesObject(BaseTest):
             countries.countries
 
     def test_ioc_countries(self):
-        from ..ioc_data import check_ioc_countries
+        from flask_countries.ioc_data import check_ioc_countries
         check_ioc_countries(verbosity=0)
 
     def test_initial_iter(self):
@@ -202,25 +210,16 @@ class CountriesFirstTest(BaseTest):
             unsorted_codes = [item[0] for item in countries_list[:3]]
             self.assertEquals(['GB', 'AF', 'DK'], unsorted_codes)
 
-    def test_sorted_countries_first_arabic(self):
-        with self.settings(
-                COUNTRIES_FIRST=['GB', 'AF', 'DK'], COUNTRIES_FIRST_SORT=True):
-            lang = translation.get_language()
-            translation.activate('eo')
-            try:
-                countries_list = list(countries)
-                sorted_codes = [item[0] for item in countries_list[:3]]
-                self.assertEquals(['AF', 'GB', 'DK'], sorted_codes)
-            finally:
-                translation.activate(lang)
-
 
 class TestCountriesCustom(BaseTest):
 
     def test_countries_limit(self):
-        fantasy_countries = custom_countries.FantasyCountries()
+        fantasy_countries = FantasyCountries()
         self.assertEqual(list(fantasy_countries), [
             ('NV', 'Neverland'),
             ('NZ', 'New Zealand'),
         ])
         self.assertEqual(len(fantasy_countries), 2)
+
+if __name__ == '__main__':
+    unittest.main()
