@@ -21,7 +21,7 @@ setup(
     name='flask-countries',
     version='1.0',
     description='Provides a country field for a flask application',
-    long_description=read_files('README.rst', 'CHANGES.rst'),
+    long_description=read_files('README.rst'),
     author='Florent Messa',
     author_email='florent.messa@gmail.com',
     url='https://github.com/ulule/flask-countries/',

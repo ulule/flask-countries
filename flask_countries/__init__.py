@@ -34,7 +34,9 @@ class Countries(object):
     code and name), sorted by name.
     """
     def __init__(self, app=None, *args, **kwargs):
-        if app:
+        self.app = app
+
+        if self.app:
             self.init_app(app, *args, **kwargs)
 
     def init_app(self, app):
@@ -52,10 +54,14 @@ class Countries(object):
         falling back to a Flask app config.
         """
         value = getattr(self, option, None)
+
         if value is not None:
             return value
 
-        return self.app.config.get('COUNTRIES_{0}'.format(option.upper()))
+        if self.app:
+            return self.app.config.get('COUNTRIES_{0}'.format(option.upper()))
+
+        return value
 
     @property
     def countries(self):
