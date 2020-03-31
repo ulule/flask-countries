@@ -318,7 +318,7 @@ msgid "Cyprus"
 msgstr "Cipro"
 
 #: data.py:107
-msgid "Czech Republic"
+msgid "Czechia"
 msgstr "Repubblica Ceca"
 
 #: data.py:108

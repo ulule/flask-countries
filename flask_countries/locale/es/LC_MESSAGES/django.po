@@ -320,7 +320,7 @@ msgid "Cyprus"
 msgstr "República de Chipre"
 
 #: data.py:107
-msgid "Czech Republic"
+msgid "Czechia"
 msgstr "República Checa"
 
 #: data.py:108
